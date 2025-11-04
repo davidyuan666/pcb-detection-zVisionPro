@@ -41,6 +41,11 @@ python web_app/app.py
 ```
 浏览器访问 `http://127.0.0.1:5000`，上传图片查看检测结果。
 
+## 项目截图
+项目期中效果展示：
+
+![screenshot](./screenshot.png)
+
 ## 数据集说明（简要）
 - 本项目采用 PCB 表面缺陷数据，已提供 COCO/YOLO 格式示例，便于直接训练或评估。
 - 如需自定义数据与标注，请将图像与标注文件放入 `data/train`, `data/valid`, `data/test` 目录结构中。
