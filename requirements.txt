@@ -1,0 +1,29 @@
+Flask>=2.3
+# PyTorch 核心库
+# 注意：PyTorch 2.6+ 引入了 weights_only=True 默认设置，会导致 ultralytics 加载模型失败
+# 因此限制 PyTorch 版本 < 2.6
+torch>=2.0.0,<2.6.0
+torchvision>=0.15.0,<0.21.0
+
+# YOLO 模型 (ultralytics)
+ultralytics==8.0.21  # 用于 ModelScope 模型 (pcb-detection.py)
+ultralyticsplus==0.0.23  # 用于 ModelScope 模型 (pcb-detection.py)
+
+# 图像处理
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# 数值计算
+numpy>=1.24.0  # 用于熵嵌入、统计计算等新增功能
+
+# 可视化
+matplotlib>=3.7.0
+
+# ModelScope 相关 (用于下载数据集和模型)
+modelscope>=1.9.0
+datasets>=2.14.0  # Hugging Face datasets 库，ModelScope 数据集功能需要
+
+# 可选：如果需要使用 CUDA 加速，确保安装对应版本的 PyTorch
+# 访问 https://pytorch.org/ 获取适合您系统的 CUDA 版本安装命令
+# 例如：pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+

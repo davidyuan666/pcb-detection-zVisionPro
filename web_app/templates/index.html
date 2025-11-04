@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Z-Vision Pro - PCB 缺陷检测</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container-fluid py-3">
+    <div class="d-flex align-items-center mb-3">
+      <h1 class="h3 mb-0">Z-Vision Pro - PCB 缺陷检测</h1>
+      <span class="badge text-bg-secondary ms-2">Demo</span>
+    </div>
+
+    <div class="row g-3">
+      <aside class="col-12 col-lg-3">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title mb-2">系统总览</h5>
+            <p class="small text-muted mb-2">底层/中间层/顶层 + 数据管理闭环</p>
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#archModal">查看架构示意</button>
+          </div>
+        </div>
+
+        <div class="accordion" id="sidebarAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-plm">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-plm" aria-expanded="true" aria-controls="collapse-plm">
+                PLM / DeepSeek 接入
+              </button>
+            </h2>
+            <div id="collapse-plm" class="accordion-collapse collapse show" aria-labelledby="heading-plm" data-bs-parent="#sidebarAccordion">
+              <div class="accordion-body">
+                <form id="form-plm" class="vstack gap-2">
+                  <div>
+                    <label class="form-label">API Endpoint</label>
+                    <input type="text" class="form-control" id="plm-endpoint" placeholder="https://api.deepseek.com/v1" />
+                  </div>
+                  <div>
+                    <label class="form-label">API Key</label>
+                    <input type="password" class="form-control" id="plm-apikey" placeholder="sk-..." />
+                  </div>
+                  <div>
+                    <label class="form-label">模型名称</label>
+                    <input type="text" class="form-control" id="plm-model" placeholder="deepseek-chat, deepseek-reasoner 等" />
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button type="button" id="btn-plm-save" class="btn btn-primary btn-sm">保存设置</button>
+                    <button type="button" id="btn-plm-test" class="btn btn-outline-secondary btn-sm">连接测试</button>
+                  </div>
+                  <div class="form-text">占位功能：只保存到浏览器本地，不调用真实服务。</div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-model">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-model" aria-expanded="false" aria-controls="collapse-model">
+                自有模型管理
+              </button>
+            </h2>
+            <div id="collapse-model" class="accordion-collapse collapse" aria-labelledby="heading-model" data-bs-parent="#sidebarAccordion">
+              <div class="accordion-body">
+                <form id="form-model" class="vstack gap-2">
+                  <div>
+                    <label class="form-label">推理引擎</label>
+                    <select class="form-select" id="model-engine">
+                      <option value="yolov5">YOLOv5</option>
+                      <option value="yolov8">YOLOv8</option>
+                      <option value="custom">自定义</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label">权重文件</label>
+                    <input type="file" class="form-control" id="model-weights" accept=".pt,.onnx,.engine" />
+                  </div>
+                  <div>
+                    <label class="form-label">备注</label>
+                    <input type="text" class="form-control" id="model-note" placeholder="版本、来源、适用工艺…" />
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button type="button" id="btn-model-apply" class="btn btn-success btn-sm">应用设置</button>
+                    <button type="button" id="btn-model-reset" class="btn btn-outline-danger btn-sm">恢复默认</button>
+                  </div>
+                  <div class="form-text">占位功能：仅界面展示与本地保存，不替换后端模型。</div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-trust">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-trust" aria-expanded="false" aria-controls="collapse-trust">
+                可靠性与监控
+              </button>
+            </h2>
+            <div id="collapse-trust" class="accordion-collapse collapse" aria-labelledby="heading-trust" data-bs-parent="#sidebarAccordion">
+              <div class="accordion-body">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="toggle-robust" checked>
+                  <label class="form-check-label" for="toggle-robust">
+                    启用实时鲁棒性校验 (T1)
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="toggle-alerts" checked>
+                  <label class="form-check-label" for="toggle-alerts">
+                    启用故障预警与异常分析 (T2)
+                  </label>
+                </div>
+                <div class="small text-muted mt-1">占位显示：阈值与策略在后续版本中配置。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="col-12 col-lg-9">
+        <section class="uploader card mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="h5 mb-0">批量上传图像</h2>
+              <div class="text-muted small">支持 .jpg/.jpeg/.png/.bmp</div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+              <input id="file-input" type="file" multiple accept=".jpg,.jpeg,.png,.bmp" class="form-control" style="max-width: 420px;" />
+              <button id="btn-upload" class="btn btn-primary">开始检测</button>
+              <button id="btn-clear-results" class="btn btn-outline-danger">清空结果</button>
+            </div>
+            <div id="upload-status" class="form-text mt-2"></div>
+          </div>
+        </section>
+
+        <section class="results">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h5 mb-0">检测结果</h2>
+            <span class="badge text-bg-info">最近结果优先</span>
+          </div>
+          <div id="results-grid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    $(function() {
+      window.ResultsUI.init();
+    });
+  </script>
+
+  <div class="modal fade" id="archModal" tabindex="-1" aria-labelledby="archModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="archModalLabel">架构示意（概览）</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2"><span class="badge text-bg-secondary">底层 (B1/B2)</span> 图像采集卡与光源控制；CAD/工艺数据接口与缓存</div>
+          <div class="mb-2"><span class="badge text-bg-primary">中间层 (M1/M2/M3)</span> 多模态嵌入特征 → PLM推理 → 企业系统集成与控制回传</div>
+          <div class="mb-2"><span class="badge text-bg-success">顶层 (T1/T2)</span> 实时鲁棒性校验与异常预警，自适应控制反馈M2微调</div>
+          <div class="mb-2"><span class="badge text-bg-dark">数据管理 (DB)</span> 历史数据、模型版本、中间结果的迭代闭环</div>
+          <hr/>
+          <p class="small text-muted">当前为演示UI，未接入真实硬件/PLM服务。可通过侧边栏配置占位项展示流程。</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<footer class="footer">
+  <div>© 2025 Z-Vision Pro Demo | 版权归广东科技学院</div>
+</footer>
+</html>
+
+

@@ -1,0 +1,24 @@
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; margin: 0; color: #222; background: #f7f7f9; }
+.container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+h1 { font-size: 22px; margin: 0 0 16px; }
+h2 { font-size: 18px; margin: 24px 0 12px; }
+
+.uploader { background: #fff; border: 1px solid #e6e6ea; padding: 16px; border-radius: 8px; }
+#file-input { margin-right: 8px; }
+#btn-upload { background: #0d6efd; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+#btn-upload:disabled { background: #7aa7f6; cursor: not-allowed; }
+#upload-status { margin-top: 10px; color: #555; }
+
+.results { margin-top: 24px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.card { background: #fff; border: 1px solid #e6e6ea; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.thumb { width: 100%; aspect-ratio: 4/3; background: #fafafa; display: flex; align-items: center; justify-content: center; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.placeholder { color: #999; font-size: 12px; }
+.meta { padding: 10px 12px; font-size: 13px; line-height: 1.4; }
+.meta .warn { color: #b54708; margin-top: 6px; }
+
+.footer { text-align: center; color: #888; font-size: 12px; padding: 12px 0 24px; }
+
+
